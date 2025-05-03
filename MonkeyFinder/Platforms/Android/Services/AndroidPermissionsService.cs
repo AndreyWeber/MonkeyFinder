@@ -43,8 +43,7 @@ namespace MonkeyFinder.Platforms.Android.Services
             return true;
         }
 
-        // TODO: Check if POST_NOTIFICATIONS granted by the system
-        // TODO: Unified loggins (community libs)
+        // TODO: Unified logging (community libs)
         // TODO: Check if notifications muted by the user and if so, show a message or go to settings
         // TODO: Get better understanding of how permissions could be granted by the system and show permissions popup
         // TODO: Check if debugging tip: Toast.MakeText(context, message, ToastLength.Short).Show(); is needed

@@ -5,6 +5,8 @@
 
 The monkey data is sourced from James Montemagno’s [official JSON file](https://montemagno.com/monkeys.json).
 
+Entering and exiting geofence icons were originally taken from [Iconduck](https://iconduck.com/) in SVG format. They were then converted to Android Vector format.
+
 ## 🚀 Purpose
 
 This project was created for educational purposes. Specifically, to:

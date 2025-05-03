@@ -4,7 +4,7 @@ namespace MonkeyFinder.Platforms.iOS.Services
 {
     public class iOSNotificationService : INotificationService
     {
-        public void SendGeofenceNotification(string title, string message)
+        public void SendGeofenceNotification(string title, string message, GeofenceTransition transtion)
         {
             throw new NotImplementedException();
         }

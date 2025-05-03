@@ -57,11 +57,11 @@ namespace MonkeyFinder.Platforms.Android.Services
             {
                 case Geofence.GeofenceTransitionEnter:
                     Log.Debug(nameof(GeofenceBroadcastReceiver), "Entering geofence area");
-                    notificationService.SendGeofenceNotification("Entering Geofence", "You have entered the geofence area.");
+                    notificationService.SendGeofenceNotification("Entering Geofence", "You have entered the geofence area.", GeofenceTransition.Enter);
                     break;
                 case Geofence.GeofenceTransitionExit:
                     Log.Debug(nameof(GeofenceBroadcastReceiver), "Exiting geofence area");
-                    notificationService.SendGeofenceNotification("Exiting Geofence", "You have exited the geofence area.");
+                    notificationService.SendGeofenceNotification("Exiting Geofence", "You have exited the geofence area.", GeofenceTransition.Exit);
                     break;
                 default:
                     Log.Error(nameof(GeofenceBroadcastReceiver), "Unknown transition type: {0}", transitionType);

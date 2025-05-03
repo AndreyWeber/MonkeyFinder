@@ -19,13 +19,12 @@ namespace MonkeyFinder.Platforms.Android.Services
             _context = context;
         }
 
-        public void SendGeofenceNotification(string title, string message)
+        public void SendGeofenceNotification(string title, string message, GeofenceTransition transition)
         {
             EnsureNotificationChannel();
 
-            // 'Resource' is an ambiguous reference between 'Microsoft.Maui.Controls.Resource' and 'Microsoft.Maui.Resource'
             var builder = new NotificationCompat.Builder(_context, ChannelId)
-                .SetSmallIcon(Microsoft.Maui.Controls.Resource.Drawable.material_ic_menu_arrow_up_black_24dp)
+                .SetSmallIcon(GetGeofenceNotificationIcon(transition))
                 .SetContentTitle(title)
                 .SetContentText(message)
                 .SetAutoCancel(true)
@@ -61,7 +60,7 @@ namespace MonkeyFinder.Platforms.Android.Services
 
             var channel = new NotificationChannel(
                 ChannelId,
-                "Geofence Alerts",
+                "Geofence Notifications",
                 NotificationImportance.High)
             {
                 Description = "Notifications for geofence transitions"
@@ -76,5 +75,13 @@ namespace MonkeyFinder.Platforms.Android.Services
 
         private static int GetNextNotificationId() =>
             Interlocked.Increment(ref currentNotificationId);
+
+        // TODO: Add suport of Dwell transition. Dwell icon is needed
+        private static int GetGeofenceNotificationIcon(GeofenceTransition transition) => transition switch
+        {
+            GeofenceTransition.Enter => Resource.Drawable.entering_geo_fence,
+            GeofenceTransition.Exit => Resource.Drawable.leaving_geo_fence,
+            _ => throw new ArgumentOutOfRangeException(nameof(transition), transition, "Unsupported or unknown GeofenceTransition type")
+        };
     }
 }
