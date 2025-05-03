@@ -23,16 +23,23 @@ namespace MonkeyFinder.Platforms.Android.Services
         {
             EnsureNotificationChannel();
 
+            // 'Resource' is an ambiguous reference between 'Microsoft.Maui.Controls.Resource' and 'Microsoft.Maui.Resource'
             var builder = new NotificationCompat.Builder(_context, ChannelId)
-                .SetSmallIcon(Resource.Drawable.material_ic_menu_arrow_up_black_24dp)
+                .SetSmallIcon(Microsoft.Maui.Controls.Resource.Drawable.material_ic_menu_arrow_up_black_24dp)
                 .SetContentTitle(title)
                 .SetContentText(message)
                 .SetAutoCancel(true)
                 .SetPriority((int)NotificationPriority.High)
                 .SetPriority((int)NotificationDefaults.All);
 
-            NotificationManagerCompat.From(_context)
-                .Notify(GetNextNotificationId(), builder.Build());
+            var manager = NotificationManagerCompat.From(_context);
+            if (!manager.AreNotificationsEnabled())
+            {
+                System.Diagnostics.Debug.WriteLine("User notifications are disabled for this app.");
+                return;
+            }
+
+            manager.Notify(GetNextNotificationId(), builder.Build());
         }
 
         private void EnsureNotificationChannel()
@@ -59,6 +66,11 @@ namespace MonkeyFinder.Platforms.Android.Services
             {
                 Description = "Notifications for geofence transitions"
             };
+
+            channel.EnableVibration(true);
+            channel.EnableLights(true);
+
+            manager.CreateNotificationChannel(channel);
 #pragma warning restore CA1416 // Validate platform compatibility
         }
 

@@ -155,11 +155,20 @@ namespace MonkeyFinder.ViewModel
         [RelayCommand]
         private async Task EnableLocationFeaturesAsync()
         {
-            var granted = await _permissionService.RequestLocationAlwaysAsync();
+            var granted = await _permissionService.RequestLocationAlwaysPermissionAsync();
             if (!granted)
             {
                 await Shell.Current.DisplayAlert("Permission Denied", "Location permission is required to use this feature.", "OK");
-                return;
+            }
+        }
+
+        [RelayCommand]
+        private async Task EnablePostNotificationsAsync()
+        {
+            var granted = await _permissionService.RequestPostNotificationsPermissionAsync();
+            if (!granted)
+            {
+                await Shell.Current.DisplayAlert("Permission Denied", "Post Notification permission is required to use this feature.", "OK");
             }
         }
     }

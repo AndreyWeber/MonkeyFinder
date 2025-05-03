@@ -13,8 +13,8 @@ namespace MonkeyFinder;
 public static class MauiProgram
 {
     /*
-     * 1. Check and implement how to send messages
-     * 2. Proper logging. There is Android.Util.Log, but what about iOS?
+     * TODO: 1. Check and implement how to send messages
+     * TODO: 2. Proper logging. There is Android.Util.Log, but what about iOS?
 	 */
 
     public static MauiApp CreateMauiApp()

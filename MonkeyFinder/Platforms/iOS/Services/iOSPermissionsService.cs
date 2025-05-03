@@ -5,7 +5,7 @@ namespace MonkeyFinder.Platforms.iOS.Services
 {
     public class iOSPermissionsService : IPermissionService
     {
-        public async Task<bool> RequestLocationAlwaysAsync()
+        public async Task<bool> RequestLocationAlwaysPermissionAsync()
         {
             var manager = new CLLocationManager();
             var tcs = new TaskCompletionSource<bool>();
@@ -27,11 +27,10 @@ namespace MonkeyFinder.Platforms.iOS.Services
 
             return await tcs.Task;
         }
-        public bool HasLocationAlwaysPermission()
+
+        public Task<bool> RequestPostNotificationsPermissionAsync()
         {
-#pragma warning disable CA1422 // Validate platform compatibility
-            return CLLocationManager.Status == CLAuthorizationStatus.AuthorizedAlways;
-#pragma warning restore CA1422 // Validate platform compatibility
+            throw new NotImplementedException();
         }
     }
 }

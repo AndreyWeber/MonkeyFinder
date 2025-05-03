@@ -1,17 +1,13 @@
-﻿using Android;
-using Android.App;
-using Android.Content;
-using Android.Gms.Location;
-using Android.Util;
-using Android.Content.PM;
+﻿using Android.App;
 using MonkeyFinder.Services;
-using System.Threading.Tasks;
+using Android.OS;
+using AndroidApp = Android.App.Application;
 
 namespace MonkeyFinder.Platforms.Android.Services
 {
     public class AndroidPermissionsService : IPermissionService
     {
-        public async Task<bool> RequestLocationAlwaysAsync()
+        public async Task<bool> RequestLocationAlwaysPermissionAsync()
         {
             // 1. Check if Fine (Foreground) the permission is granted
             var fineStatus = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
@@ -47,30 +43,34 @@ namespace MonkeyFinder.Platforms.Android.Services
             return true;
         }
 
-        public bool HasLocationAlwaysPermission()
+        // TODO: Check if POST_NOTIFICATIONS granted by the system
+        // TODO: Unified loggins (community libs)
+        // TODO: Check if notifications muted by the user and if so, show a message or go to settings
+        // TODO: Get better understanding of how permissions could be granted by the system and show permissions popup
+        // TODO: Check if debugging tip: Toast.MakeText(context, message, ToastLength.Short).Show(); is needed
+        // TODO: Understand what to do if Notification channels are not supported
+        // TODO: Make sure how to use EnsureNotificationChannel() correctly
+
+        public async Task<bool> RequestPostNotificationsPermissionAsync()
         {
-            // On Android < 29, there's effectively no separate "background" permission.
-            // The user either has Fine location (which covers it all).
-            // On Android >= 29, you must check both File + Background.
-
-#pragma warning disable CA1416 // Validate platform compatibility
-            var finePermission = Platform.CurrentActivity?.CheckSelfPermission(Manifest.Permission.AccessFineLocation);
-#pragma warning restore CA1416 // Validate platform compatibility
-            if (finePermission != Permission.Granted)
+            // Permission is not needed on Android < 33
+            if (!OperatingSystem.IsAndroidVersionAtLeast(33))
             {
-                return false;
+                return true;
             }
 
-            if (OperatingSystem.IsAndroidVersionAtLeast(29))
+            // Check permission current status
+            var status = await Permissions.CheckStatusAsync<Permissions.PostNotifications>();
+            if (status == PermissionStatus.Granted)
             {
-                var backgroundPermission = Platform.CurrentActivity?.CheckSelfPermission(Manifest.Permission.AccessBackgroundLocation);
-                if (backgroundPermission != Permission.Granted)
-                {
-                    return false;
-                }
+                // Permission already granted
+                return true;
             }
 
-            return true;
+            // Request the permission
+            var requestedStatus = await Permissions.RequestAsync<Permissions.PostNotifications>();
+
+            return requestedStatus == PermissionStatus.Granted;
         }
     }
 }
