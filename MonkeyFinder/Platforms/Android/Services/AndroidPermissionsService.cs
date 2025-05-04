@@ -1,12 +1,17 @@
-﻿using Android.App;
-using MonkeyFinder.Services;
+﻿using MonkeyFinder.Services;
 using Android.OS;
-using AndroidApp = Android.App.Application;
+using Android.Provider;
+using Android.Content;
+using AndroidX.Core.App;
+
+using AndroidNet = Android.Net;
 
 namespace MonkeyFinder.Platforms.Android.Services
 {
-    public class AndroidPermissionsService : IPermissionService
+    public class AndroidPermissionsService(Context context) : IPermissionService
     {
+        private readonly Context _context = context;
+
         public async Task<bool> RequestLocationAlwaysPermissionAsync()
         {
             // 1. Check if Fine (Foreground) the permission is granted
@@ -70,6 +75,38 @@ namespace MonkeyFinder.Platforms.Android.Services
             var requestedStatus = await Permissions.RequestAsync<Permissions.PostNotifications>();
 
             return requestedStatus == PermissionStatus.Granted;
+        }
+
+        public Task<bool> AreAppNotificationsEnabledAsync()
+        {
+            var enabled = NotificationManagerCompat
+                .From(_context)
+                .AreNotificationsEnabled();
+            return Task.FromResult(enabled);
+        }
+
+        public void RequestAppNotificationSettings()
+        {
+            Intent intent;
+
+            // API-26 (Oreo) and above - directly open app settings
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            {
+#pragma warning disable CA1416 // Validate platform compatibility
+                intent = new Intent(Settings.ActionAppNotificationSettings)
+                .AddFlags(ActivityFlags.NewTask)
+                    .PutExtra(Settings.ExtraAppPackage, _context.PackageName);
+#pragma warning restore CA1416 // Validate platform compatibility
+            }
+            // Older versions - fallback to the general app settings
+            else
+            {
+                intent = new Intent(Settings.ActionApplicationDetailsSettings)
+                .AddFlags(ActivityFlags.NewTask)
+                    .SetData(AndroidNet.Uri.Parse($"package:{_context.PackageName}"));
+            }
+
+            _context.StartActivity(intent);
         }
     }
 }

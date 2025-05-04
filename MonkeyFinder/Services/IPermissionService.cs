@@ -5,5 +5,8 @@ namespace MonkeyFinder.Services
     {
         Task<bool> RequestLocationAlwaysPermissionAsync();
         Task<bool> RequestPostNotificationsPermissionAsync();
+
+        Task<bool> AreAppNotificationsEnabledAsync();
+        void RequestAppNotificationSettings();
     }
 }

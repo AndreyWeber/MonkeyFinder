@@ -12,25 +12,20 @@ namespace MonkeyFinder;
 
 public static class MauiProgram
 {
-    /*
-     * TODO: 1. Check and implement how to send messages
-     * TODO: 2. Proper logging. There is Android.Util.Log, but what about iOS?
-	 */
-
     public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
-		builder
-			.UseMauiApp<App>()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-			});
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
 
 #if DEBUG
-		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
         // System services
@@ -40,19 +35,17 @@ public static class MauiProgram
 
         // Services
 #if ANDROID
-        builder.Services.AddSingleton<IPermissionService, AndroidPermissionsService>();
+        builder.Services.AddSingleton<IPermissionService>(sp =>
+        {
+            return new AndroidPermissionsService(MainApplication.Context);
+        });
         builder.Services.AddSingleton<IGeofencingService>(sp =>
         {
-            //var context = Android.App.Application.Context;
-            var context = MainApplication.Context;
-            return new AndroidGeofencingService(context);
-
+            return new AndroidGeofencingService(MainApplication.Context);
         });
         builder.Services.AddSingleton<INotificationService>(sp =>
         {
-            //var context = Android.App.Application.Context;
-            var context = MainApplication.Context;
-            return new AndroidNotificationService(context);
+            return new AndroidNotificationService(MainApplication.Context);
         });
 #elif IOS
         builder.Services.AddSingleton<IPermissionService, iOSPermissionsService>();

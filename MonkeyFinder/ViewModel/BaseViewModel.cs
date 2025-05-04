@@ -13,8 +13,9 @@ public partial class BaseViewModel : ObservableObject
     public bool IsNotBusy => !IsBusy;
 #pragma warning restore MVVMTK0045
 
-    public BaseViewModel()
-    {
+    public BaseViewModel() { }
 
-    }
+    public virtual Task OnAppearingAsync() => Task.CompletedTask;
+
+    public virtual Task OnDisappearingAsync() => Task.CompletedTask;
 }

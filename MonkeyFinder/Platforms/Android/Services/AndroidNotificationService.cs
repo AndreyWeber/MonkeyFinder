@@ -6,18 +6,13 @@ using AndroidX.Core.App;
 
 namespace MonkeyFinder.Platforms.Android.Services
 {
-    public class AndroidNotificationService : INotificationService
+    public class AndroidNotificationService(Context context) : INotificationService
     {
         public const string ChannelId = "monkey_finder_geofence_alert";
 
         private static int currentNotificationId = 0;
-        
-        private readonly Context _context;
 
-        public AndroidNotificationService(Context context)
-        {
-            _context = context;
-        }
+        private readonly Context _context = context;
 
         public void SendGeofenceNotification(string title, string message, GeofenceTransition transition)
         {
@@ -29,16 +24,11 @@ namespace MonkeyFinder.Platforms.Android.Services
                 .SetContentText(message)
                 .SetAutoCancel(true)
                 .SetPriority((int)NotificationPriority.High)
-                .SetPriority((int)NotificationDefaults.All);
+                .SetDefaults((int)NotificationDefaults.All);
 
-            var manager = NotificationManagerCompat.From(_context);
-            if (!manager.AreNotificationsEnabled())
-            {
-                System.Diagnostics.Debug.WriteLine("User notifications are disabled for this app.");
-                return;
-            }
-
-            manager.Notify(GetNextNotificationId(), builder.Build());
+            NotificationManagerCompat
+                .From(_context)
+                .Notify(GetNextNotificationId(), builder.Build());
         }
 
         private void EnsureNotificationChannel()
@@ -46,6 +36,7 @@ namespace MonkeyFinder.Platforms.Android.Services
             if (Build.VERSION.SdkInt < BuildVersionCodes.O)
             {
                 // Notification channels are not supported on this version of Android
+                // TODO: Add logging
                 return;
             }
 
@@ -66,6 +57,7 @@ namespace MonkeyFinder.Platforms.Android.Services
                 Description = "Notifications for geofence transitions"
             };
 
+            // TODO: Do I need to set these properties?
             channel.EnableVibration(true);
             channel.EnableLights(true);
 

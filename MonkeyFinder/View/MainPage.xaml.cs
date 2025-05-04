@@ -16,26 +16,6 @@ public partial class MainPage : ContentPage
     {
         base.OnAppearing();
 
-        await GetPermissionsAsync();
-    }
-
-    private async Task GetPermissionsAsync()
-    {
-        try
-        {
-            if (_viewModel.EnableLocationFeaturesCommand.CanExecute(null))
-            {
-                await _viewModel.EnableLocationFeaturesCommand.ExecuteAsync(null);
-            }
-
-            if (_viewModel.EnablePostNotificationsCommand.CanExecute(null))
-            {
-                await _viewModel.EnablePostNotificationsCommand.ExecuteAsync(null);
-            }
-        }
-        catch (PermissionException ex)
-        {
-            Debug.WriteLine(ex);
-        }
+        await _viewModel.OnAppearingAsync();
     }
 }

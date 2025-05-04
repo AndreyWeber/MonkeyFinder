@@ -9,6 +9,7 @@ namespace MonkeyFinder.ViewModel
         private readonly IConnectivity _connectivity;
         private readonly IGeolocation _geolocation;
         private readonly IPermissionService _permissionService;
+        private readonly INotificationService _notificationService;
         private readonly IGeofencingService _geofencingService;
 
         public ObservableCollection<Monkey> Monkeys { get; } = [];
@@ -18,15 +19,56 @@ namespace MonkeyFinder.ViewModel
             IConnectivity connectivity,
             IGeolocation geolocation,
             IPermissionService permissionService,
+            INotificationService notificationService,
             IGeofencingService geofencingService)
         {
             _monkeyService = monkeyService;
             _connectivity = connectivity;
             _geolocation = geolocation;
             _permissionService = permissionService;
+            _notificationService = notificationService;
             _geofencingService = geofencingService;
 
             Title = "Monkey Finder";
+        }
+
+        public override async Task OnAppearingAsync()
+        {
+            await base.OnAppearingAsync();
+
+            await EnsureLocationFeaturesEnabledAsync();
+
+            await EnsurePostNotificationsEnabledAsync();
+
+            // TODO: Check if notifications are enabled and go the enabling page
+            await EnsureNotificationsEnabledAsync();
+        }
+
+        private async Task EnsureNotificationsEnabledAsync()
+        {
+            if (await _permissionService.AreAppNotificationsEnabledAsync())
+            {
+                return;
+            }
+            _permissionService.RequestAppNotificationSettings();
+        }
+
+        private async Task EnsureLocationFeaturesEnabledAsync()
+        {
+            var granted = await _permissionService.RequestLocationAlwaysPermissionAsync();
+            if (!granted)
+            {
+                await Shell.Current.DisplayAlert("Permission Denied", "Location permission is required to use this feature.", "OK");
+            }
+        }
+
+        private async Task EnsurePostNotificationsEnabledAsync()
+        {
+            var granted = await _permissionService.RequestPostNotificationsPermissionAsync();
+            if (!granted)
+            {
+                await Shell.Current.DisplayAlert("Permission Denied", "Post Notification permission is required to use this feature.", "OK");
+            }
         }
 
         [RelayCommand]
@@ -149,26 +191,6 @@ namespace MonkeyFinder.ViewModel
             finally
             {
                 IsBusy = false;
-            }
-        }
-
-        [RelayCommand]
-        private async Task EnableLocationFeaturesAsync()
-        {
-            var granted = await _permissionService.RequestLocationAlwaysPermissionAsync();
-            if (!granted)
-            {
-                await Shell.Current.DisplayAlert("Permission Denied", "Location permission is required to use this feature.", "OK");
-            }
-        }
-
-        [RelayCommand]
-        private async Task EnablePostNotificationsAsync()
-        {
-            var granted = await _permissionService.RequestPostNotificationsPermissionAsync();
-            if (!granted)
-            {
-                await Shell.Current.DisplayAlert("Permission Denied", "Post Notification permission is required to use this feature.", "OK");
             }
         }
     }
